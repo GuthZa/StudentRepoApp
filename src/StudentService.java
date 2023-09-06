@@ -9,7 +9,7 @@ public class StudentService {
     public StudentService() {
         students = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            students.add(new Student(i, "Bilbo Baggins"));
+            students.add(new Student(i, "Bilbo Baggins", "Shire"));
         }
     }
 
