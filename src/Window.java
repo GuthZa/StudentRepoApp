@@ -19,9 +19,9 @@ public class Window extends JFrame {
         contentPane.setLayout(null);
 
         String[][] data = {
-                {"1", "Bilbo Baggins", "Shire"},
-                {"2", "Samwise Gamgee", "Shire"},
-                {"3", "Gandalf", "Wanderer"}};
+                {"1", "Bilbo", "Baggins", "Shire", "10"},
+                {"2", "Samwise", "Gamgee", "Shire", "10"},
+                {"3", "Gandalf", "the Grey", "Wanderer", "20"}};
         String[] column = {"ID", "NAME", "LOCATION"};
 
         JButton addButton = new JButton("Add");
@@ -32,21 +32,21 @@ public class Window extends JFrame {
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
-        table.setModel(model);
         table.setDefaultEditor(Objects.class, null);
         table.setRowHeight(35);
         table.setBackground(Color.white);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(120);//set to the column width
-        table.getColumnModel().getColumn(1).setPreferredWidth(150);
-        table.getColumnModel().getColumn(2).setPreferredWidth(150);
-        table.getColumnModel().getColumn(3).setPreferredWidth(150);
-        table.getColumnModel().getColumn(4).setPreferredWidth(100);
+        for (String[] datum: data) {
+            model.addRow(datum);
+        }
 
-        JScrollPane scrollPane = new JScrollPane();
+        table.setModel(model);
+
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(10, 540, 925, 290);
         contentPane.add(scrollPane);
+
 
 //        setSize(700, 700);
         setVisible(true);
