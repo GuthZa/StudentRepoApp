@@ -17,7 +17,7 @@ public class StudentService {
         return students;
     }
     public String[] columnsToString() {
-        return new String[]{"ID", "First Name", "Last Name", "Location", "Grade"};
+        return new String[]{"First Name", "Last Name", "Location", "Grade"};
     }
 
 }

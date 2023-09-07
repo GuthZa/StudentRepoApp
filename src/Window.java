@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class Window extends JFrame {
 
-    private final String[] columns = {"ID", "First Name", " Last Name", "Department", "Grade"};
     private StudentService studentService;
     private ArrayList<Student> students;
 
@@ -20,12 +19,6 @@ public class Window extends JFrame {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
-
-        String[][] data = {
-                {"1", "Bilbo", "Baggins", "Shire", "10"},
-                {"2", "Samwise", "Gamgee", "Shire", "10"},
-                {"3", "Gandalf", "the Grey", "Wanderer", "20"}};
-
         //Text Fields
 
         //First Name
@@ -89,8 +82,8 @@ public class Window extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //add row data to table
-        for (String[] datum : data) {
-            model.addRow(datum);
+        for (Student student :studentService.getStudents()) {
+            model.addRow(student.getString());
         }
 
         //Setting the table to the scrollPane and into the window

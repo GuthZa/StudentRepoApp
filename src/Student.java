@@ -54,4 +54,8 @@ public class Student {
     public String getGrade() {
         return grade;
     }
+
+    public String[] getString() {
+        return new String[] {firstName, lastName, location, grade};
+    }
 }
