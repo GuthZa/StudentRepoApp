@@ -82,7 +82,7 @@ public class Window extends JFrame {
         //Table
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(columns);
+        model.setColumnIdentifiers(studentService.columnsToString());
         table.setDefaultEditor(Objects.class, null);
         table.setRowHeight(35);
         table.setBackground(Color.white);
