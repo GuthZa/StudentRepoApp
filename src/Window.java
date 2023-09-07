@@ -6,8 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
@@ -23,30 +22,33 @@ public class Window extends JFrame implements ActionListener {
     private JTable table;
 
     public Window() throws HeadlessException {
+        String url, user, password;
 
         try (InputStream input = new FileInputStream("resources/config.properties")) {
             Properties properties = new Properties();
 
             properties.load(input);
 
-            System.out.println(properties.getProperty("db.url"));
-            System.out.println(properties.getProperty("db.user"));
-            System.out.println(properties.getProperty("db.password"));
+            url = properties.getProperty("db.url");
+            user = properties.getProperty("db.user");
+            password = properties.getProperty("db.password");
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select * from student");
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString(1) + " "+resultSet.getString(2)+resultSet.getString(3)+" "+resultSet.getString(4));
+            }
+
+            connection.close();
+        } catch (IOException | SQLException e) {
+            System.out.println(e);
         }
 
 
-
-//        String url = "";
-//        String username = "root";
-//        try {
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         studentService = new StudentService();
         students = studentService.getAllStudents();
 
