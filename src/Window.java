@@ -183,8 +183,37 @@ public class Window extends JFrame implements ActionListener {
                 model.setValueAt(grade, numberOfRow, 3);
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "No row has been selected or row exits");
+                JOptionPane.showMessageDialog(null, "No row has been selected or exits.");
             }
+        } else if(source.equals(searchButton)) {
+            if (!firstNameTextField.getText().isEmpty()) {
+                clearRows();
+                studentService.getStudentsByFirstName(firstNameTextField.getText())
+                        .forEach(student ->
+                                model.addRow(student.getAsString()));
+            } else if (!lastNameTextField.getText().isEmpty()) {
+                clearRows();
+                studentService.getStudentsByLastName(lastNameTextField.getText())
+                        .forEach(student ->
+                                model.addRow(student.getAsString()));
+            } else if (!locationTextField.getText().isEmpty()) {
+                clearRows();
+                studentService.getStudentsByLocation(locationTextField.getText())
+                        .forEach(student ->
+                                model.addRow(student.getAsString()));
+            } else {
+                clearRows();
+                studentService.getAllStudents()
+                        .forEach(student ->
+                                model.addRow(student.getAsString()));
+                JOptionPane.showMessageDialog(null, "Search too broad, please reduce the terms.");
+            }
+        }
+    }
+
+    private void clearRows() {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            model.removeRow(i);
         }
     }
 }
