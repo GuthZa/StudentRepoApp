@@ -1,15 +1,18 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Window extends JFrame {
 
     private final String[] columns = {"ID", "First Name", " Last Name", "Department", "Grade"};
-
-    Student one = new Student(1, "Bilbo Baggins", "Shire");
+    private StudentService studentService;
+    private ArrayList<Student> students;
 
     public Window() throws HeadlessException {
+        studentService = new StudentService();
+        students = studentService.getStudents();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(100, 100, 670, 620);
@@ -27,7 +30,7 @@ public class Window extends JFrame {
 
         //First Name
         JLabel firstNameLabel = new JLabel("First name: ");
-        firstNameLabel.setBounds(15 , 35, 150, 34);
+        firstNameLabel.setBounds(15, 35, 150, 34);
         contentPane.add(firstNameLabel);
 
         JTextField firstNameTextField = new JTextField();
@@ -36,7 +39,7 @@ public class Window extends JFrame {
 
         //Last Name
         JLabel lastNameLabel = new JLabel("Last name: ");
-        lastNameLabel.setBounds(15 , 85, 150, 34);
+        lastNameLabel.setBounds(15, 85, 150, 34);
         contentPane.add(lastNameLabel);
 
         JTextField lastNameTextField = new JTextField();
@@ -45,7 +48,7 @@ public class Window extends JFrame {
 
         //Location
         JLabel locationLabel = new JLabel("Location: ");
-        locationLabel.setBounds(15 , 135, 150, 34);
+        locationLabel.setBounds(15, 135, 150, 34);
         contentPane.add(locationLabel);
 
         JTextField locationTextField = new JTextField();
@@ -54,7 +57,7 @@ public class Window extends JFrame {
 
         //Grade
         JLabel gradeLabel = new JLabel("Grade: ");
-        gradeLabel.setBounds(20 , 185, 150, 34);
+        gradeLabel.setBounds(20, 185, 150, 34);
         contentPane.add(gradeLabel);
 
         JTextField gradeTextField = new JTextField();
@@ -76,7 +79,6 @@ public class Window extends JFrame {
         contentPane.add(deleteButton);
 
 
-
         //Table
         JTable table = new JTable();
         DefaultTableModel model = new DefaultTableModel();
@@ -87,7 +89,7 @@ public class Window extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //add row data to table
-        for (String[] datum: data) {
+        for (String[] datum : data) {
             model.addRow(datum);
         }
 

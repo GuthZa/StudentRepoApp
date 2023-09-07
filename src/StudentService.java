@@ -8,13 +8,16 @@ public class StudentService {
 
     public StudentService() {
         students = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            students.add(new Student(i, "Bilbo Baggins", "Shire"));
-        }
+        students.add(new Student(1, "Bilbo", "Baggins", "Shire", "10"));
+        students.add(new Student(2, "Samwise", "Gamgee", "Shire", "10"));
+        students.add(new Student(3, "Gandalf", "the Gray", "Shire", "10"));
     }
 
-    public Stream<Student> getStudentByName(String name) {
-        return students.stream().
-                filter(student -> Objects.equals(student.getName(), name));
+    public ArrayList<Student> getStudents() {
+        return students;
     }
+    public String[] columnsToString() {
+        return new String[]{"ID", "First Name", "Last Name", "Location", "Grade"};
+    }
+
 }

@@ -2,13 +2,17 @@ import java.util.ArrayList;
 
 public class Student {
     private int id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String location;
+    private String grade;
 
-    public Student(int id, String name, String location) {
+    public Student(int id, String firstName, String lastName, String location, String grade) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.location = location;
+        this.grade = grade;
     }
 
     public int getId() {
@@ -19,12 +23,24 @@ public class Student {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 
     public String getLocation() {
@@ -35,11 +51,7 @@ public class Student {
         this.location = location;
     }
 
-    public String[] getData() {
-        return new String[]{name, location};
-    }
-
-    public String[] columnsToString() {
-        return new String[]{"NAME", "LOCATION"};
+    public String getGrade() {
+        return grade;
     }
 }
