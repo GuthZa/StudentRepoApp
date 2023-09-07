@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 public class StudentService {
 
@@ -13,7 +11,7 @@ public class StudentService {
         students.add(new Student(3, "Gandalf", "the Gray", "Shire", "10"));
     }
 
-    public ArrayList<Student> getStudents() {
+    public ArrayList<Student> getAllStudents() {
         return students;
     }
     public String[] columnsToString() {

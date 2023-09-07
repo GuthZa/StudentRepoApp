@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Student {
     private int id;
     private String firstName;
@@ -55,7 +53,7 @@ public class Student {
         return grade;
     }
 
-    public String[] getString() {
+    public String[] getAsString() {
         return new String[] {firstName, lastName, location, grade};
     }
 }

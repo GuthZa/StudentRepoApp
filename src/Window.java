@@ -1,17 +1,21 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Window extends JFrame {
+public class Window extends JFrame implements ActionListener {
 
     private StudentService studentService;
     private ArrayList<Student> students;
 
     public Window() throws HeadlessException {
         studentService = new StudentService();
-        students = studentService.getStudents();
+        students = studentService.getAllStudents();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(100, 100, 670, 620);
@@ -71,6 +75,15 @@ public class Window extends JFrame {
         deleteButton.setBounds(400, 175, 100, 40);
         contentPane.add(deleteButton);
 
+        JButton updateButton = new JButton("Update");
+        updateButton.setBounds(520, 70, 100, 40);
+        contentPane.add(updateButton);
+
+        addButton.addActionListener(this);
+        searchButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+        updateButton.addActionListener(this);
+
 
         //Table
         JTable table = new JTable();
@@ -82,8 +95,8 @@ public class Window extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //add row data to table
-        for (Student student :studentService.getStudents()) {
-            model.addRow(student.getString());
+        for (Student student :studentService.getAllStudents()) {
+            model.addRow(student.getAsString());
         }
 
         //Setting the table to the scrollPane and into the window
@@ -92,8 +105,31 @@ public class Window extends JFrame {
         scrollPane.setBounds(10, 280, 635, 290);
         contentPane.add(scrollPane);
 
+        //Mouse Listener, adds info to text field when selecting row
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent m) {
+                int numberOfRows = table.getSelectedRow();
+                //getValueAt() method return object. so convert to String using toString() method
+                String firstName = model.getValueAt(numberOfRows, 0).toString();
+                String lastName = model.getValueAt(numberOfRows, 1).toString();
+                String location = model.getValueAt(numberOfRows, 2).toString();
+                String grade = model.getValueAt(numberOfRows, 3).toString();
+
+                firstNameTextField.setText(firstName);
+                lastNameTextField.setText(lastName);
+                locationTextField.setText(location);
+                gradeTextField.setText(grade);
+            }
+        });
+
 
         setVisible(true);
         setResizable(false);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }
