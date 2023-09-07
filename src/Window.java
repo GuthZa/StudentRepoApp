@@ -5,8 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Properties;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -19,6 +23,30 @@ public class Window extends JFrame implements ActionListener {
     private JTable table;
 
     public Window() throws HeadlessException {
+
+        try (InputStream input = new FileInputStream("resources/config.properties")) {
+            Properties properties = new Properties();
+
+            properties.load(input);
+
+            System.out.println(properties.getProperty("db.url"));
+            System.out.println(properties.getProperty("db.user"));
+            System.out.println(properties.getProperty("db.password"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+//        String url = "";
+//        String username = "root";
+//        try {
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         studentService = new StudentService();
         students = studentService.getAllStudents();
 
