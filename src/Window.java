@@ -143,8 +143,8 @@ public class Window extends JFrame implements ActionListener {
             gradeTextField.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please fill all information.");
             } else {
+                String[] row = new String[studentService.columnsToString().length];
                 try {
-                    String[] row = new String[studentService.columnsToString().length];
                     row[0] = firstNameTextField.getText();
                     row[1] = lastNameTextField.getText();
                     row[2] = locationTextField.getText();
@@ -153,16 +153,21 @@ public class Window extends JFrame implements ActionListener {
                 } catch (Exception exception) {
                     JOptionPane.showMessageDialog(null, "Please check the information provided.");
                 }
+                studentService.addStudent(row[0], row[1], row[2], row[3]);
             }
         } else if (source.equals(deleteButton)) {
             int numberOfRow = table.getSelectedRow();
 
             if (numberOfRow >= 0) {
-
                 model.removeRow(numberOfRow);
+                studentService.removeStudentByName(firstNameTextField.getText());
+                firstNameTextField.setText("");
+                lastNameTextField.setText("");
+                locationTextField.setText("");
+                gradeTextField.setText("");
 
             } else {
-                JOptionPane.showMessageDialog(null, "Unable to Delete");
+                JOptionPane.showMessageDialog(null, "Select a row to delete!");
             }
         } else if (source.equals(updateButton)) {
             int numberOfRow = table.getSelectedRow();
