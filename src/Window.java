@@ -13,6 +13,11 @@ public class Window extends JFrame implements ActionListener {
     private StudentService studentService;
     private ArrayList<Student> students;
 
+    private JButton addButton, deleteButton, updateButton, searchButton;
+    private JTextField firstNameTextField, lastNameTextField, locationTextField, gradeTextField;
+    private DefaultTableModel model;
+    private JTable table;
+
     public Window() throws HeadlessException {
         studentService = new StudentService();
         students = studentService.getAllStudents();
@@ -30,7 +35,7 @@ public class Window extends JFrame implements ActionListener {
         firstNameLabel.setBounds(15, 35, 150, 34);
         contentPane.add(firstNameLabel);
 
-        JTextField firstNameTextField = new JTextField();
+        firstNameTextField = new JTextField();
         firstNameTextField.setBounds(95, 40, 200, 30);
         contentPane.add(firstNameTextField);
 
@@ -39,7 +44,7 @@ public class Window extends JFrame implements ActionListener {
         lastNameLabel.setBounds(15, 85, 150, 34);
         contentPane.add(lastNameLabel);
 
-        JTextField lastNameTextField = new JTextField();
+        lastNameTextField = new JTextField();
         lastNameTextField.setBounds(95, 90, 200, 30);
         contentPane.add(lastNameTextField);
 
@@ -48,7 +53,7 @@ public class Window extends JFrame implements ActionListener {
         locationLabel.setBounds(15, 135, 150, 34);
         contentPane.add(locationLabel);
 
-        JTextField locationTextField = new JTextField();
+        locationTextField = new JTextField();
         locationTextField.setBounds(95, 140, 200, 30);
         contentPane.add(locationTextField);
 
@@ -57,25 +62,25 @@ public class Window extends JFrame implements ActionListener {
         gradeLabel.setBounds(20, 185, 150, 34);
         contentPane.add(gradeLabel);
 
-        JTextField gradeTextField = new JTextField();
+        gradeTextField = new JTextField();
         gradeTextField.setBounds(95, 190, 200, 30);
         contentPane.add(gradeTextField);
 
 
         //Buttons
-        JButton addButton = new JButton("Add");
+        addButton = new JButton("Add");
         addButton.setBounds(400, 35, 100, 40);
         contentPane.add(addButton);
 
-        JButton searchButton = new JButton("Search");
+        searchButton = new JButton("Search");
         searchButton.setBounds(400, 95, 100, 40);
         contentPane.add(searchButton);
 
-        JButton deleteButton = new JButton("Delete");
+        deleteButton = new JButton("Delete");
         deleteButton.setBounds(400, 175, 100, 40);
         contentPane.add(deleteButton);
 
-        JButton updateButton = new JButton("Update");
+        updateButton = new JButton("Update");
         updateButton.setBounds(520, 70, 100, 40);
         contentPane.add(updateButton);
 
@@ -86,8 +91,8 @@ public class Window extends JFrame implements ActionListener {
 
 
         //Table
-        JTable table = new JTable();
-        DefaultTableModel model = new DefaultTableModel();
+        table = new JTable();
+        model = new DefaultTableModel();
         model.setColumnIdentifiers(studentService.columnsToString());
         table.setDefaultEditor(Objects.class, null);
         table.setRowHeight(35);
@@ -130,6 +135,51 @@ public class Window extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source.equals(addButton)) {
+            if(firstNameTextField.getText().isEmpty() ||
+            lastNameTextField.getText().isEmpty() ||
+            locationTextField.getText().isEmpty() ||
+            gradeTextField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please fill all information.");
+            } else {
+                try {
+                    String[] row = new String[studentService.columnsToString().length];
+                    row[0] = firstNameTextField.getText();
+                    row[1] = lastNameTextField.getText();
+                    row[2] = locationTextField.getText();
+                    row[3] = gradeTextField.getText();
+                    model.addRow(row);
+                } catch (Exception exception) {
+                    JOptionPane.showMessageDialog(null, "Please check the information provided.");
+                }
+            }
+        } else if (source.equals(deleteButton)) {
+            int numberOfRow = table.getSelectedRow();
 
+            if (numberOfRow >= 0) {
+
+                model.removeRow(numberOfRow);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Unable to Delete");
+            }
+        } else if (source.equals(updateButton)) {
+            int numberOfRow = table.getSelectedRow();
+            try {
+                String firstName = firstNameTextField.getText();
+                String lastName = lastNameTextField.getText();
+                String location = locationTextField.getText();
+                String grade = gradeTextField.getText();
+
+                model.setValueAt(firstName, numberOfRow, 0);
+                model.setValueAt(lastName, numberOfRow, 1);
+                model.setValueAt(location, numberOfRow, 2);
+                model.setValueAt(grade, numberOfRow, 3);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "No row has been selected or row exits");
+            }
+        }
     }
 }
