@@ -196,6 +196,7 @@ public class Window extends JFrame implements ActionListener {
                 locationTextField.setText("");
                 gradeTextField.setText("");
 
+
             } else {
                 JOptionPane.showMessageDialog(null, "Select a row to delete!");
             }
