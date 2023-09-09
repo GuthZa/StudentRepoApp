@@ -5,12 +5,15 @@ public class Student {
     private String location;
     private String grade;
 
+    public Student() {}
+
     public Student(int id, String firstName, String lastName, String location, String grade) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.location = location;
         this.grade = grade;
+        System.out.println("Student created" + this);
     }
 
     public int getId() {
@@ -55,5 +58,16 @@ public class Student {
 
     public String[] getAsString() {
         return new String[] {firstName, lastName, location, grade};
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", location='" + location + '\'' +
+                ", grade='" + grade + '\'' +
+                '}';
     }
 }

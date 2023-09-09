@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -161,28 +162,32 @@ public class Window extends JFrame implements ActionListener {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select * from student");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM student");
 
             while (resultSet.next()) {
-                Student student = new Student(
-                        resultSet.getInt(5),
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4));
-                studentService.addStudent(student);
                 System.out.println("Student " +
                         resultSet.getInt(5) + ": " +
                         resultSet.getString(1) + " " +
                         resultSet.getString(2) + ", " +
                         resultSet.getString(3) + " - " +
                         resultSet.getString(4));
+
+                Student student = new Student();
+
+                student.setId(resultSet.getInt(5));
+                student.setFirstName(resultSet.getString(1));
+                student.setLastName(resultSet.getString(2));
+                student.setLocation(resultSet.getString(3));
+                student.setGrade(resultSet.getString(4));
+
+                studentService.addStudent(student);
             }
 
             connection.close();
         } catch (SQLException e) {
             System.out.println(e);
         }
+
         return connection;
     }
 

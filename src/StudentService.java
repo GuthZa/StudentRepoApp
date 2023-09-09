@@ -34,7 +34,6 @@ public class StudentService {
 
     public void addStudent(Student student) {
         students.add(student);
-
     }
 
     public void removeStudentByName(String name) {
