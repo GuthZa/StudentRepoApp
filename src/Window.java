@@ -13,43 +13,32 @@ import java.util.Properties;
 
 public class Window extends JFrame implements ActionListener {
 
-    private StudentService studentService;
+    private final StudentService studentService = new StudentService();
     private ArrayList<Student> students;
 
     private JButton addButton, deleteButton, updateButton, searchButton;
     private JTextField firstNameTextField, lastNameTextField, locationTextField, gradeTextField;
     private DefaultTableModel model;
     private JTable table;
+    private String url, user, password;
+    private Connection connection;
 
     public Window() throws HeadlessException {
-        String url, user, password;
-
         try (InputStream input = new FileInputStream("resources/config.properties")) {
-            Properties properties = new Properties();
 
+            Properties properties = new Properties();
             properties.load(input);
 
             url = properties.getProperty("db.url");
             user = properties.getProperty("db.user");
             password = properties.getProperty("db.password");
-
-            Connection connection = DriverManager.getConnection(url, user, password);
-
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery("select * from student");
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1) + " "+resultSet.getString(2)+resultSet.getString(3)+" "+resultSet.getString(4));
-            }
-
-            connection.close();
-        } catch (IOException | SQLException e) {
+            connection = getConnection(url, user, password);
+        } catch (Exception e) {
             System.out.println(e);
         }
 
 
-        studentService = new StudentService();
+
         students = studentService.getAllStudents();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -163,6 +152,58 @@ public class Window extends JFrame implements ActionListener {
         setResizable(false);
     }
 
+
+
+    public Connection getConnection(String url, String user, String password) {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select * from student");
+
+            while (resultSet.next()) {
+                Student student = new Student(
+                        resultSet.getInt(5),
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4));
+                studentService.addStudent(student);
+                System.out.println("Student " +
+                        resultSet.getInt(5) + ": " +
+                        resultSet.getString(1) + " " +
+                        resultSet.getString(2) + ", " +
+                        resultSet.getString(3) + " - " +
+                        resultSet.getString(4));
+            }
+
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return connection;
+    }
+
+    public void addStudentToDB(Student student) {
+        try {
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select * from student");
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString(1) + " "+resultSet.getString(2)+resultSet.getString(3)+" "+resultSet.getString(4));
+            }
+
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -180,10 +221,13 @@ public class Window extends JFrame implements ActionListener {
                     row[2] = locationTextField.getText();
                     row[3] = gradeTextField.getText();
                     model.addRow(row);
+
                 } catch (Exception exception) {
                     JOptionPane.showMessageDialog(null, "Please check the information provided.");
                 }
-                studentService.addStudent(row[0], row[1], row[2], row[3]);
+//                Student student = new Student(row[0], row[1], row[2], row[3]);
+//                addStudentToDB(student);
+//                studentService.addStudent(student);
             }
         } else if (source.equals(deleteButton)) {
             int numberOfRow = table.getSelectedRow();

@@ -7,13 +7,12 @@ public class StudentService {
 
     public StudentService() {
         students = new ArrayList<>();
-        createDummyStudents();
     }
 
     private void createDummyStudents() {
-        students.add(new Student(1, "Bilbo", "Baggins", "Shire", "10"));
+        students.add(new Student( 1, "Bilbo", "Baggins", "Shire", "10"));
         students.add(new Student(2, "Samwise", "Gamgee", "Shire", "10"));
-        students.add(new Student(3, "Gandalf", "the Gray", "Shire", "10"));
+        students.add(new Student( 3, "Gandalf", "the Grey", "Shire", "10"));
     }
 
     public ArrayList<Student> getAllStudents() {
@@ -33,9 +32,9 @@ public class StudentService {
         return students.stream().filter(student -> student.getLocation().equals(location)).toList();
     }
 
-    public void addStudent(String firstName, String lastname, String location, String grade) {
-        int id = students.get(students.size() - 1).getId() + 1; //creates an id that is 1 larger than last students id
-        students.add(new Student(id, firstName, lastname, location, grade));
+    public void addStudent(Student student) {
+        students.add(student);
+
     }
 
     public void removeStudentByName(String name) {
