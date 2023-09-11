@@ -191,52 +191,61 @@ public class Window extends JFrame implements ActionListener {
         return connection;
     }
 
-    public void addStudentToDB(Student student) {
-        try {
-            Connection connection = DriverManager.getConnection(url, user, password);
-
+    public int addStudentToDB(String firstName, String lastName, String location, String grade) {
+        int id = -1;
+        try (Connection connection = DriverManager.getConnection(url, user, password)){
             Statement statement = connection.createStatement();
 
             String sql = "INSERT INTO student " +
-                    "(firstName, lastName, location, grade) values" +
-                    " ('" + student.getFirstName() + "', '" +
-                    "'" + student.getLastName() + "', " +
-                    "'" + student.getLocation() + "', " +
-                    "'" + student.getGrade() + "')";
+                    "(firstName, lastName, location, grade) VALUES" +
+                    " ( '" + firstName + "', " +
+                    "'" + lastName + "', " +
+                    "'" + location + "', " +
+                    "'" + grade + "' );";
 
             statement.execute(sql);
             JOptionPane.showMessageDialog(null, "Insertion concluded");
+            ResultSet resultSet = statement.executeQuery("SELECT id FROM student WHERE firstName = '" + firstName + "'");
 
-            connection.close();
+            if (resultSet.next())
+                id = resultSet.getInt(1);
+            System.out.println(id);
+
         } catch (SQLException e) {
             System.out.println(e);
         }
+        return id;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source.equals(addButton)) {
-            if(firstNameTextField.getText().isEmpty() ||
-            lastNameTextField.getText().isEmpty() ||
-            locationTextField.getText().isEmpty() ||
-            gradeTextField.getText().isEmpty()) {
+            if (firstNameTextField.getText().isEmpty() ||
+                    lastNameTextField.getText().isEmpty() ||
+                    locationTextField.getText().isEmpty() ||
+                    gradeTextField.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please fill all information.");
-            } else {
-                String[] row = new String[studentService.columnsToString().length];
-                try {
-                    row[0] = firstNameTextField.getText();
-                    row[1] = lastNameTextField.getText();
-                    row[2] = locationTextField.getText();
-                    row[3] = gradeTextField.getText();
-                    model.addRow(row);
+                return;
+            }
+            String[] row = new String[studentService.columnsToString().length];
+            try {
+                row[0] = firstNameTextField.getText();
+                row[1] = lastNameTextField.getText();
+                row[2] = locationTextField.getText();
+                row[3] = gradeTextField.getText();
 
-                } catch (Exception exception) {
-                    JOptionPane.showMessageDialog(null, "Please check the information provided.");
+                int id = addStudentToDB(row[0], row[1], row[2], row[3]);
+                if (!(id==-1)) {
+                    model.addRow(row);
+                    Student student = new Student(id, row[0], row[1], row[2], row[3]);
+                    studentService.addStudent(student);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Something went wrong adding the entry");
                 }
-//                Student student = new Student(row[0], row[1], row[2], row[3]);
-//                addStudentToDB(student);
-//                studentService.addStudent(student);
+
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(null, "Please check the information provided.");
             }
         } else if (source.equals(deleteButton)) {
             int numberOfRow = table.getSelectedRow();
