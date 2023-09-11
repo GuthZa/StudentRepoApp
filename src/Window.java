@@ -166,7 +166,6 @@ public class Window extends JFrame implements ActionListener {
 
             while (resultSet.next()) {
                 System.out.println("Student " +
-                        resultSet.getInt(5) + ": " +
                         resultSet.getString(1) + " " +
                         resultSet.getString(2) + ", " +
                         resultSet.getString(3) + " - " +
@@ -174,7 +173,6 @@ public class Window extends JFrame implements ActionListener {
 
                 Student student = new Student();
 
-                student.setId(resultSet.getInt(5));
                 student.setFirstName(resultSet.getString(1));
                 student.setLastName(resultSet.getString(2));
                 student.setLocation(resultSet.getString(3));
@@ -196,6 +194,22 @@ public class Window extends JFrame implements ActionListener {
         try (Connection connection = DriverManager.getConnection(url, user, password)){
             Statement statement = connection.createStatement();
 
+            ResultSet resultSet;
+            resultSet = statement.executeQuery(
+                    "SELECT * FROM student "+
+                            "WHERE EXIST ("+
+                                "SELECT 1 FROM student WHERE " +
+                                    "firstName = '" + firstName + "', " +
+                                    "lastName = '" + lastName + "');");
+
+            if(resultSet.next()) {
+                JOptionPane.showMessageDialog(null, "There's already a student with that name");
+                return id;
+            }
+
+            System.out.println("enter adding");
+
+
             String sql = "INSERT INTO student " +
                     "(firstName, lastName, location, grade) VALUES" +
                     " ( '" + firstName + "', " +
@@ -205,11 +219,10 @@ public class Window extends JFrame implements ActionListener {
 
             statement.execute(sql);
             JOptionPane.showMessageDialog(null, "Insertion concluded");
-            ResultSet resultSet = statement.executeQuery("SELECT id FROM student WHERE firstName = '" + firstName + "'");
+            resultSet = statement.executeQuery("SELECT id FROM student WHERE firstName = '" + firstName +"';");
 
             if (resultSet.next())
                 id = resultSet.getInt(1);
-            System.out.println(id);
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -221,10 +234,12 @@ public class Window extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source.equals(addButton)) {
-            if (firstNameTextField.getText().isEmpty() ||
+            if (
+                    firstNameTextField.getText().isEmpty() ||
                     lastNameTextField.getText().isEmpty() ||
                     locationTextField.getText().isEmpty() ||
-                    gradeTextField.getText().isEmpty()) {
+                    gradeTextField.getText().isEmpty()
+            ) {
                 JOptionPane.showMessageDialog(null, "Please fill all information.");
                 return;
             }
@@ -238,12 +253,11 @@ public class Window extends JFrame implements ActionListener {
                 int id = addStudentToDB(row[0], row[1], row[2], row[3]);
                 if (!(id==-1)) {
                     model.addRow(row);
-                    Student student = new Student(id, row[0], row[1], row[2], row[3]);
+                    Student student = new Student(row[0], row[1], row[2], row[3]);
                     studentService.addStudent(student);
                 } else {
                     JOptionPane.showMessageDialog(null, "Something went wrong adding the entry");
                 }
-
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(null, "Please check the information provided.");
             }
@@ -251,6 +265,8 @@ public class Window extends JFrame implements ActionListener {
             int numberOfRow = table.getSelectedRow();
 
             if (numberOfRow >= 0) {
+
+                studentService.getStudentsByFirstName(firstNameTextField.getText());
                 model.removeRow(numberOfRow);
                 studentService.removeStudentByName(firstNameTextField.getText());
                 firstNameTextField.setText("");

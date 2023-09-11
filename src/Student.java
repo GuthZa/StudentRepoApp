@@ -1,5 +1,4 @@
 public class Student {
-    private int id;
     private String firstName;
     private String lastName;
     private String location;
@@ -7,23 +6,13 @@ public class Student {
 
     public Student() {}
 
-    public Student(int id, String firstName, String lastName, String location, String grade) {
-        this.id = id;
+    public Student(String firstName, String lastName, String location, String grade) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.location = location;
         this.grade = grade;
         System.out.println("Student created" + this);
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -63,8 +52,7 @@ public class Student {
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
+                "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", location='" + location + '\'' +
                 ", grade='" + grade + '\'' +

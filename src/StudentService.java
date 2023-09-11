@@ -10,9 +10,9 @@ public class StudentService {
     }
 
     private void createDummyStudents() {
-        students.add(new Student( 1, "Bilbo", "Baggins", "Shire", "10"));
-        students.add(new Student(2, "Samwise", "Gamgee", "Shire", "10"));
-        students.add(new Student( 3, "Gandalf", "the Grey", "Shire", "10"));
+        students.add(new Student("Bilbo", "Baggins", "Shire", "10"));
+        students.add(new Student("Samwise", "Gamgee", "Shire", "10"));
+        students.add(new Student("Gandalf", "the Grey", "Shire", "10"));
     }
 
     public ArrayList<Student> getAllStudents() {
