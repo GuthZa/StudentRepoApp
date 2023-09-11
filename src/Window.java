@@ -15,32 +15,16 @@ import java.util.Properties;
 public class Window extends JFrame implements ActionListener {
 
     private final StudentService studentService = new StudentService();
-    private ArrayList<Student> students;
 
-    private JButton addButton, deleteButton, updateButton, searchButton;
-    private JTextField firstNameTextField, lastNameTextField, locationTextField, gradeTextField;
-    private DefaultTableModel model;
-    private JTable table;
+    private final JButton addButton, deleteButton, updateButton, searchButton;
+    private final JTextField firstNameTextField, lastNameTextField, locationTextField, gradeTextField;
+    private final DefaultTableModel model;
+    private final JTable table;
     private String url, user, password;
-    private Connection connection;
 
     public Window() throws HeadlessException {
-        try (InputStream input = new FileInputStream("resources/config.properties")) {
 
-            Properties properties = new Properties();
-            properties.load(input);
-
-            url = properties.getProperty("db.url");
-            user = properties.getProperty("db.user");
-            password = properties.getProperty("db.password");
-            connection = getConnection(url, user, password);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-
-
-        students = studentService.getAllStudents();
+        setupDataBaseSettings();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(100, 100, 670, 620);
@@ -153,6 +137,19 @@ public class Window extends JFrame implements ActionListener {
         setResizable(false);
     }
 
+    private void setupDataBaseSettings() {
+        try (InputStream input = new FileInputStream("resources/config.properties")) {
+
+            Properties properties = new Properties();
+            properties.load(input);
+
+            url = properties.getProperty("db.url");
+            user = properties.getProperty("db.user");
+            password = properties.getProperty("db.password");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 
 
     public Connection getConnection(String url, String user, String password) {
@@ -194,14 +191,11 @@ public class Window extends JFrame implements ActionListener {
                 Connection connection = DriverManager.getConnection(url, user, password);
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT firstName FROM student WHERE firstname = ?");
         ){
+            //TODO Redo using the arraylist from student services? Which one could be faster?
             preparedStatement.setString(1, firstName);
 
             ResultSet resultSet;
             resultSet = preparedStatement.executeQuery();
-//            resultSet = statement.executeQuery(
-//                    "SELECT * FROM student WHERE " +
-//                            "(firstName = '" + firstName + "', " +
-//                            "lastName = '" + lastName + "');");
 
             if (resultSet.next()) {
                 JOptionPane.showMessageDialog(null, "There's already a student with that name");
