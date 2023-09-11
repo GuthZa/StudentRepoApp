@@ -197,11 +197,15 @@ public class Window extends JFrame implements ActionListener {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select * from student");
+            String sql = "INSERT INTO student " +
+                    "(firstName, lastName, location, grade) values" +
+                    " ('" + student.getFirstName() + "', '" +
+                    "'" + student.getLastName() + "', " +
+                    "'" + student.getLocation() + "', " +
+                    "'" + student.getGrade() + "')";
 
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1) + " "+resultSet.getString(2)+resultSet.getString(3)+" "+resultSet.getString(4));
-            }
+            statement.execute(sql);
+            JOptionPane.showMessageDialog(null, "Insertion concluded");
 
             connection.close();
         } catch (SQLException e) {
