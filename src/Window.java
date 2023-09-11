@@ -189,26 +189,28 @@ public class Window extends JFrame implements ActionListener {
         return connection;
     }
 
-    public int addStudentToDB(String firstName, String lastName, String location, String grade) {
-        int id = -1;
-        try (Connection connection = DriverManager.getConnection(url, user, password)){
-            Statement statement = connection.createStatement();
+    public boolean addStudentToDB(String firstName, String lastName, String location, String grade) {
+        try (
+                Connection connection = DriverManager.getConnection(url, user, password);
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT firstName FROM student WHERE firstname = ?");
+        ){
+            preparedStatement.setString(1, firstName);
 
             ResultSet resultSet;
-            resultSet = statement.executeQuery(
-                    "SELECT * FROM student "+
-                            "WHERE EXIST ("+
-                                "SELECT 1 FROM student WHERE " +
-                                    "firstName = '" + firstName + "', " +
-                                    "lastName = '" + lastName + "');");
+            resultSet = preparedStatement.executeQuery();
+//            resultSet = statement.executeQuery(
+//                    "SELECT * FROM student WHERE " +
+//                            "(firstName = '" + firstName + "', " +
+//                            "lastName = '" + lastName + "');");
 
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 JOptionPane.showMessageDialog(null, "There's already a student with that name");
-                return id;
+                return false;
             }
 
             System.out.println("enter adding");
 
+            Statement statement = connection.createStatement();
 
             String sql = "INSERT INTO student " +
                     "(firstName, lastName, location, grade) VALUES" +
@@ -219,15 +221,11 @@ public class Window extends JFrame implements ActionListener {
 
             statement.execute(sql);
             JOptionPane.showMessageDialog(null, "Insertion concluded");
-            resultSet = statement.executeQuery("SELECT id FROM student WHERE firstName = '" + firstName +"';");
-
-            if (resultSet.next())
-                id = resultSet.getInt(1);
 
         } catch (SQLException e) {
             System.out.println(e);
         }
-        return id;
+        return true;
     }
 
     @Override
@@ -250,13 +248,10 @@ public class Window extends JFrame implements ActionListener {
                 row[2] = locationTextField.getText();
                 row[3] = gradeTextField.getText();
 
-                int id = addStudentToDB(row[0], row[1], row[2], row[3]);
-                if (!(id==-1)) {
+                if (addStudentToDB(row[0], row[1], row[2], row[3])) {
                     model.addRow(row);
                     Student student = new Student(row[0], row[1], row[2], row[3]);
                     studentService.addStudent(student);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Something went wrong adding the entry");
                 }
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(null, "Please check the information provided.");
