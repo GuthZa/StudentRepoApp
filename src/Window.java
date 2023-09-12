@@ -219,8 +219,22 @@ public class Window extends JFrame implements ActionListener {
         return true;
     }
 
-    private void updateStudentInDatabase(String firstName, String lastName, String location, String grade) {
+    private void updateStudentInDatabase(String name, String firstName, String lastName, String location, String grade) {
+        try (
+                Connection connection = DriverManager.getConnection(url, user, password);
+                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE student SET firstName = ?, lastName = ?, location = ?, grade = ? WHERE firstName = ?");
+        ){
 
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, location);
+            preparedStatement.setString(4, grade);
+            preparedStatement.setString(5, name);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
@@ -268,22 +282,26 @@ public class Window extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Select a row to delete!");
             }
         } else if (source.equals(updateButton)) {
+
             int numberOfRow = table.getSelectedRow();
+            if (numberOfRow == -1) {
+                JOptionPane.showMessageDialog(null, "Please select a row");
+                return;
+            }
+            Object str = table.getValueAt(table.getSelectedRow(), 0);
+            String name = str.toString();
             try {
                 String firstName = firstNameTextField.getText();
                 String lastName = lastNameTextField.getText();
                 String location = locationTextField.getText();
                 String grade = gradeTextField.getText();
 
-
-
-                if (studentService.getStudentByFirstName(firstName).isPresent()) {
-                    studentService.getStudentByFirstName(firstName).get().setFirstName(firstName);
-                    studentService.getStudentByFirstName(firstName).get().setLastName(lastName);
-                    studentService.getStudentByFirstName(firstName).get().setLocation(location);
-                    studentService.getStudentByFirstName(firstName).get().setGrade(grade);
-
-                    updateStudentInDatabase(firstName, lastName, location, grade);
+                if (studentService.getStudentByFirstName(name).isPresent()) {
+                    updateStudentInDatabase(name ,firstName, lastName, location, grade);
+                    studentService.getStudentByFirstName(name).get().setFirstName(firstName);
+                    studentService.getStudentByFirstName(name).get().setLastName(lastName);
+                    studentService.getStudentByFirstName(name).get().setLocation(location);
+                    studentService.getStudentByFirstName(name).get().setGrade(grade);
                 }
 
                 model.setValueAt(firstName, numberOfRow, 0);
