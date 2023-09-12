@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class StudentService {
 
@@ -19,17 +20,17 @@ public class StudentService {
         return students;
     }
 
-    public List<Student> getStudentsByFirstName(String firstName) {
-        return students.stream().filter(student -> student.getFirstName().equals(firstName)).toList();
+    public Optional<Student> getStudentByFirstName(String firstName) {
+        return students.stream().filter(student -> student.getFirstName().equals(firstName)).findFirst();
     }
 
-    public List<Student> getStudentsByLastName(String lastName) {
-        return students.stream().filter(student -> student.getLastName().equals(lastName)).toList();
+    public Optional<Student> getStudentsByLastName(String lastName) {
+        return students.stream().filter(student -> student.getLastName().equals(lastName)).findFirst();
 
     }
 
-    public List<Student> getStudentsByLocation(String location) {
-        return students.stream().filter(student -> student.getLocation().equals(location)).toList();
+    public Optional<Student> getStudentsByLocation(String location) {
+        return students.stream().filter(student -> student.getLocation().equals(location)).findFirst();
     }
 
     public void addStudent(Student student) {

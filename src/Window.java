@@ -5,11 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 public class Window extends JFrame implements ActionListener {
@@ -146,16 +146,17 @@ public class Window extends JFrame implements ActionListener {
             url = properties.getProperty("db.url");
             user = properties.getProperty("db.user");
             password = properties.getProperty("db.password");
+
+            getConnection(url, user, password);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
 
-    public Connection getConnection(String url, String user, String password) {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(url, user, password);
+    public void getConnection(String url, String user, String password) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)){
+
 
             Statement statement = connection.createStatement();
 
@@ -177,22 +178,20 @@ public class Window extends JFrame implements ActionListener {
 
                 studentService.addStudent(student);
             }
-
-            connection.close();
         } catch (SQLException e) {
             System.out.println(e);
         }
 
-        return connection;
     }
 
     public boolean addStudentToDB(String firstName, String lastName, String location, String grade) {
         try (
                 Connection connection = DriverManager.getConnection(url, user, password);
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT firstName FROM student WHERE firstname = ?");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM student WHERE (firstname = ?, lastName = ?)");
         ){
             //TODO Redo using the arraylist from student services? Which one could be faster?
             preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
 
             ResultSet resultSet;
             resultSet = preparedStatement.executeQuery();
@@ -201,8 +200,6 @@ public class Window extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "There's already a student with that name");
                 return false;
             }
-
-            System.out.println("enter adding");
 
             Statement statement = connection.createStatement();
 
@@ -220,6 +217,10 @@ public class Window extends JFrame implements ActionListener {
             System.out.println(e);
         }
         return true;
+    }
+
+    private void updateStudentInDatabase(String firstName, String lastName, String location, String grade) {
+
     }
 
     @Override
@@ -255,7 +256,6 @@ public class Window extends JFrame implements ActionListener {
 
             if (numberOfRow >= 0) {
 
-                studentService.getStudentsByFirstName(firstNameTextField.getText());
                 model.removeRow(numberOfRow);
                 studentService.removeStudentByName(firstNameTextField.getText());
                 firstNameTextField.setText("");
@@ -275,6 +275,17 @@ public class Window extends JFrame implements ActionListener {
                 String location = locationTextField.getText();
                 String grade = gradeTextField.getText();
 
+
+
+                if (studentService.getStudentByFirstName(firstName).isPresent()) {
+                    studentService.getStudentByFirstName(firstName).get().setFirstName(firstName);
+                    studentService.getStudentByFirstName(firstName).get().setLastName(lastName);
+                    studentService.getStudentByFirstName(firstName).get().setLocation(location);
+                    studentService.getStudentByFirstName(firstName).get().setGrade(grade);
+
+                    updateStudentInDatabase(firstName, lastName, location, grade);
+                }
+
                 model.setValueAt(firstName, numberOfRow, 0);
                 model.setValueAt(lastName, numberOfRow, 1);
                 model.setValueAt(location, numberOfRow, 2);
@@ -286,19 +297,21 @@ public class Window extends JFrame implements ActionListener {
         } else if(source.equals(searchButton)) {
             if (!firstNameTextField.getText().isEmpty()) {
                 model.setRowCount(0);
-                studentService.getStudentsByFirstName(firstNameTextField.getText())
-                        .forEach(student ->
-                                model.addRow(student.getAsString()));
+                if (studentService.getStudentByFirstName(firstNameTextField.getText()).isPresent())
+                    model.addRow(studentService.getStudentByFirstName(firstNameTextField.getText())
+                            .get().getAsString());
+
             } else if (!lastNameTextField.getText().isEmpty()) {
                 model.setRowCount(0);
-                studentService.getStudentsByLastName(lastNameTextField.getText())
-                        .forEach(student ->
-                                model.addRow(student.getAsString()));
+                if (studentService.getStudentsByLastName(lastNameTextField.getText()).isPresent())
+                    studentService.getStudentsByLastName(lastNameTextField.getText())
+                            .get().getAsString();
+
             } else if (!locationTextField.getText().isEmpty()) {
                 model.setRowCount(0);
-                studentService.getStudentsByLocation(locationTextField.getText())
-                        .forEach(student ->
-                                model.addRow(student.getAsString()));
+                if (studentService.getStudentsByLocation(locationTextField.getText()).isPresent())
+                    studentService.getStudentsByLocation(locationTextField.getText())
+                            .get().getAsString();
             } else {
                 model.setRowCount(0);
                 studentService.getAllStudents()
