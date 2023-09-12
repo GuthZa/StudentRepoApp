@@ -196,7 +196,7 @@ public class Window extends JFrame implements ActionListener {
             ResultSet resultSet;
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
+            if (resultSet.next() || studentService.getStudentByFirstName(firstName).isPresent()) {
                 JOptionPane.showMessageDialog(null, "There's already a student with that name");
                 return false;
             }
@@ -219,7 +219,7 @@ public class Window extends JFrame implements ActionListener {
         return true;
     }
 
-    private void updateStudentInDatabase(String name, String firstName, String lastName, String location, String grade) {
+    private boolean updateStudentInDatabase(String name, String firstName, String lastName, String location, String grade) {
         try (
                 Connection connection = DriverManager.getConnection(url, user, password);
                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE student SET firstName = ?, lastName = ?, location = ?, grade = ? WHERE firstName = ?");
@@ -234,7 +234,9 @@ public class Window extends JFrame implements ActionListener {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);
+            return false;
         }
+        return true;
     }
 
     @Override
@@ -296,21 +298,22 @@ public class Window extends JFrame implements ActionListener {
                 String location = locationTextField.getText();
                 String grade = gradeTextField.getText();
 
-                if (studentService.getStudentByFirstName(name).isPresent()) {
-                    updateStudentInDatabase(name ,firstName, lastName, location, grade);
+                if (studentService.getStudentByFirstName(name).isPresent() && updateStudentInDatabase(name ,firstName, lastName, location, grade)) {
                     studentService.getStudentByFirstName(name).get().setFirstName(firstName);
                     studentService.getStudentByFirstName(name).get().setLastName(lastName);
                     studentService.getStudentByFirstName(name).get().setLocation(location);
                     studentService.getStudentByFirstName(name).get().setGrade(grade);
+
+                    model.setValueAt(firstName, numberOfRow, 0);
+                    model.setValueAt(lastName, numberOfRow, 1);
+                    model.setValueAt(location, numberOfRow, 2);
+                    model.setValueAt(grade, numberOfRow, 3);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No student found.");
                 }
 
-                model.setValueAt(firstName, numberOfRow, 0);
-                model.setValueAt(lastName, numberOfRow, 1);
-                model.setValueAt(location, numberOfRow, 2);
-                model.setValueAt(grade, numberOfRow, 3);
-
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "No row has been selected or exits.");
+                JOptionPane.showMessageDialog(null, "No row has been selected.");
             }
         } else if(source.equals(searchButton)) {
             if (!firstNameTextField.getText().isEmpty()) {
