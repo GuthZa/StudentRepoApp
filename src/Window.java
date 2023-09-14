@@ -185,18 +185,8 @@ public class Window extends JFrame implements ActionListener {
     }
 
     public boolean addStudentToDB(String firstName, String lastName, String location, String grade) {
-        try (
-                Connection connection = DriverManager.getConnection(url, user, password);
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM student WHERE (firstname = ?, lastName = ?)");
-        ){
-            //TODO Redo using the arraylist from student services? Which one could be faster?
-            preparedStatement.setString(1, firstName);
-            preparedStatement.setString(2, lastName);
-
-            ResultSet resultSet;
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next() || studentService.getStudentByFirstName(firstName).isPresent()) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+            if (studentService.getStudentByFirstName(firstName).isPresent() && studentService.getStudentsByLastName(lastName).isPresent()) {
                 JOptionPane.showMessageDialog(null, "There's already a student with that name");
                 return false;
             }
