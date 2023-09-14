@@ -229,6 +229,20 @@ public class Window extends JFrame implements ActionListener {
         return true;
     }
 
+    private boolean deleteFromDatabase(String firstName, String lastName) {
+        try (Connection connection = DriverManager.getConnection(url, user, password)){
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM student WHERE ( firstName = ?, lastName = ?)");
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -264,6 +278,7 @@ public class Window extends JFrame implements ActionListener {
 
                 model.removeRow(numberOfRow);
                 studentService.removeStudentByName(firstNameTextField.getText());
+                deleteFromDatabase(firstNameTextField.getText(), lastNameTextField.getText());
                 firstNameTextField.setText("");
                 lastNameTextField.setText("");
                 locationTextField.setText("");
